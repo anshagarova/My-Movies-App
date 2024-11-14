@@ -81,7 +81,9 @@ class HomePageState extends State<HomePage> {
 
   void updateRating(int index, FilmRating rating) {
     setState(() {
-      films[index].rating = rating;
+      var filteredFilm = filteredFilms[index];
+      var originalIndex = films.indexOf(filteredFilm);
+      films[originalIndex].rating = rating;
       saveFilms();
     });
   }

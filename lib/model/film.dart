@@ -16,12 +16,16 @@ class Film {
   };
 
   factory Film.fromJson(Map<String, dynamic> json) {
-    return Film(
-      title: json['title'] as String,
-      rating: FilmRating.values.firstWhere(
-            (e) => e.toString().split('.').last == json['rating'],
-        orElse: () => FilmRating.none,
-      ),
-    );
+    try {
+      return Film(
+        title: json['title'] as String,
+        rating: FilmRating.values.firstWhere(
+              (e) => e.toString().split('.').last == json['rating'],
+          orElse: () => FilmRating.none,
+        ),
+      );
+    } catch (e) {
+      return Film(title: json['title'] as String, rating: FilmRating.none);
+    }
   }
 }
