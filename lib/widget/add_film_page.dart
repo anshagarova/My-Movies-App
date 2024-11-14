@@ -1,6 +1,5 @@
-// add_film_page.dart
 import 'package:flutter/material.dart';
-import '../model/film.dart';
+import 'package:my_movies/model/film.dart';
 
 class AddFilmPage extends StatefulWidget {
   final Function(Film, int?) onSaveFilm;
@@ -8,11 +7,11 @@ class AddFilmPage extends StatefulWidget {
   final int? filmIndex;
 
   const AddFilmPage({
-    Key? key,
+    super.key,
     required this.onSaveFilm,
     this.existingFilm,
     this.filmIndex,
-  }) : super(key: key);
+  });
 
   @override
   _AddFilmPageState createState() => _AddFilmPageState();

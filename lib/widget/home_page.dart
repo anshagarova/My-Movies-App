@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'add_film_page.dart';
-import '../model/film.dart';
-import 'rating_button.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:my_movies/widget/add_film_page.dart';
+import 'package:my_movies/model/film.dart';
+import 'package:my_movies/widget/rating_button.dart';
+import 'package:my_movies/widget/error_message.dart';
+import 'package:my_movies/widget/film_list_view.dart';
+import 'package:my_movies/widget/film_filter.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({ super.key });
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   List<Film> films = [];
   String errorMessage = '';
   FilmRating? filterRating;
@@ -24,13 +27,8 @@ class _HomePageState extends State<HomePage> {
     loadFilms();
   }
 
-  int get goodFilmsCount {
-    return films.where((film) => film.rating == FilmRating.good).length;
-  }
-
-  int get badFilmsCount {
-    return films.where((film) => film.rating == FilmRating.bad).length;
-  }
+  int get goodFilmsCount => films.where((film) => film.rating == FilmRating.good).length;
+  int get badFilmsCount => films.where((film) => film.rating == FilmRating.bad).length;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -45,7 +43,6 @@ class _HomePageState extends State<HomePage> {
   Future<void> loadFilms() async {
     try {
       final file = await _localFile;
-
       if (await file.exists()) {
         String filmsJson = await file.readAsString();
         setState(() {
@@ -126,98 +123,29 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () => toggleFilter(FilmRating.good),
-                    child: Text(
-                      'Good: $goodFilmsCount',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: filterRating == FilmRating.good ? Colors.green : Colors.green.shade900,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => toggleFilter(FilmRating.bad),
-                    child: Text(
-                      'Bad: $badFilmsCount',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: filterRating == FilmRating.bad ? Colors.red : Colors.red.shade700,
-                      ),
-                    ),
-                  ),
-                ],
+      body: Column(
+        children: [
+          FilmFilter(
+            goodFilmsCount: goodFilmsCount,
+            badFilmsCount: badFilmsCount,
+            filterRating: filterRating,
+            toggleFilter: toggleFilter,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: FilmListView(
+                films: filteredFilms,
+                updateRating: updateRating,
+                onSaveFilm: onSaveFilm,
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: ListView.builder(
-                  itemCount: filteredFilms.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 5.0),
-                      child: ListTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(filteredFilms[index].title),
-                            ),
-                            RatingButton(
-                              onRatingChanged: (rating) => updateRating(index, FilmRating.good),
-                              rating: FilmRating.good,
-                              currentRating: filteredFilms[index].rating,
-                            ),
-                            const SizedBox(width: 10),
-                            RatingButton(
-                              onRatingChanged: (rating) => updateRating(index, FilmRating.bad),
-                              rating: FilmRating.bad,
-                              currentRating: filteredFilms[index].rating,
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddFilmPage(
-                                onSaveFilm: onSaveFilm,
-                                existingFilm: filteredFilms[index],
-                                filmIndex: films.indexOf(filteredFilms[index]),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            if (errorMessage.isNotEmpty)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 40.0),
-                child: Text(
-                  errorMessage,
-                  style: TextStyle(color: Colors.red.shade700),
-                ),
-              ),
-          ],
-        ),
+          ),
+          if (errorMessage.isNotEmpty)
+            ErrorMessageWidget(errorMessage: errorMessage),
+        ],
       ),
     );
   }
 }
+

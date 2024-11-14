@@ -1,6 +1,5 @@
 import 'package:my_movies/widget/rating_button.dart';
 
-
 class Film {
   final String title;
   FilmRating rating;

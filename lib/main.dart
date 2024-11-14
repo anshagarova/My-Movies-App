@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widget/app_wrapper.dart';
+import 'package:my_movies/widget/app_wrapper.dart';
 
 void main() {
   runApp(const AppWrapper());

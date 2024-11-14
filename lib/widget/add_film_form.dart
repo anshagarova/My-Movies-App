@@ -5,10 +5,10 @@ class AddFilmForm extends StatelessWidget {
   final Function addFilm;
 
   const AddFilmForm({
-    Key? key,
+    super.key,
     required this.inputController,
     required this.addFilm,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -8,11 +8,11 @@ class RatingButton extends StatelessWidget {
   final FilmRating? currentRating;
 
   const RatingButton({
-    Key? key,
+    super.key,
     required this.onRatingChanged,
     required this.rating,
     required this.currentRating,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
