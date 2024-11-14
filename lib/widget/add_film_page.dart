@@ -26,6 +26,13 @@ class _AddFilmPageState extends State<AddFilmPage> {
     titleController = TextEditingController(text: widget.existingFilm?.title ?? '');
   }
 
+  @override
+  void dispose() {
+    titleController.dispose();
+    super.dispose();
+  }
+
+
   void saveFilm() {
     if (titleController.text.isNotEmpty) {
       final newFilm = Film(title: titleController.text);

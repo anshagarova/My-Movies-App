@@ -20,6 +20,9 @@ class FilmListView extends StatelessWidget {
     return ListView.builder(
       itemCount: films.length,
       itemBuilder: (context, index) {
+
+        final film = films[index];
+
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 5.0),
           child: ListTile(
@@ -27,18 +30,18 @@ class FilmListView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(films[index].title),
+                  child: Text(film.title),
                 ),
                 RatingButton(
-                  onRatingChanged: (rating) => updateRating(index, FilmRating.good),
+                  onRatingChanged: (rating) => updateRating(index, rating),
                   rating: FilmRating.good,
-                  currentRating: films[index].rating,
+                  currentRating: film.rating,
                 ),
                 const SizedBox(width: 10),
                 RatingButton(
-                  onRatingChanged: (rating) => updateRating(index, FilmRating.bad),
+                  onRatingChanged: (rating) => updateRating(index, rating),
                   rating: FilmRating.bad,
-                  currentRating: films[index].rating,
+                  currentRating: film.rating,
                 ),
               ],
             ),
@@ -48,8 +51,8 @@ class FilmListView extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => AddFilmPage(
                     onSaveFilm: onSaveFilm,
-                    existingFilm: films[index],
-                    filmIndex: films.indexOf(films[index]),
+                    existingFilm: film,
+                    filmIndex: index,
                   ),
                 ),
               );
