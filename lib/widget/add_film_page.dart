@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:my_movies/model/film.dart';
 import 'package:my_movies/widget/rating_button.dart';
+import 'package:my_movies/widget/film_title_text_field.dart';
 
 class AddFilmPage extends StatelessWidget {
-  final Function(Film, int?) onSaveFilm;
+  final void Function(Film, int?) onSaveFilm;
   final Film? existingFilm;
   final int? filmIndex;
 
@@ -23,12 +24,21 @@ class AddFilmPage extends StatelessWidget {
         title: Text(existingFilm == null ? 'Add Film' : 'Edit Film'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(5.0),
         child: Column(
           children: [
-            TextField(
+            FilmTitleTextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: 'Film Title'),
+              label: 'Film Title',
+              onSubmitted: (value) {
+                final updatedFilm = Film(
+                  title: value,
+                  rating: existingFilm?.rating ?? FilmRating.none,
+                );
+
+                onSaveFilm(updatedFilm, filmIndex);
+                Navigator.pop(context);
+              },
             ),
             ElevatedButton(
               onPressed: () {
