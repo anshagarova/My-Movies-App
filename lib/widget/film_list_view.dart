@@ -20,43 +20,58 @@ class FilmListView extends StatelessWidget {
     return ListView.builder(
       itemCount: films.length,
       itemBuilder: (context, index) {
-
         final film = films[index];
 
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 5.0),
-          child: ListTile(
-            title: Row(
+          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Film title
                 Expanded(
-                  child: Text(film.title),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddFilmPage(
+                            onSaveFilm: onSaveFilm,
+                            existingFilm: film,
+                            filmIndex: index,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      film.title,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-                RatingButton(
-                  onRatingChanged: (rating) => updateRating(index, rating),
-                  rating: FilmRating.good,
-                  currentRating: film.rating,
-                ),
-                const SizedBox(width: 10),
-                RatingButton(
-                  onRatingChanged: (rating) => updateRating(index, rating),
-                  rating: FilmRating.bad,
-                  currentRating: film.rating,
+                // Rating buttons
+                Row(
+                  children: [
+                    RatingButton(
+                      onRatingChanged: (rating) => updateRating(index, rating),
+                      rating: FilmRating.good,
+                      currentRating: film.rating,
+                    ),
+                    const SizedBox(width: 8),
+                    RatingButton(
+                      onRatingChanged: (rating) => updateRating(index, rating),
+                      rating: FilmRating.bad,
+                      currentRating: film.rating,
+                    ),
+                  ],
                 ),
               ],
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddFilmPage(
-                    onSaveFilm: onSaveFilm,
-                    existingFilm: film,
-                    filmIndex: index,
-                  ),
-                ),
-              );
-            },
           ),
         );
       },

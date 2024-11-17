@@ -1,103 +1,51 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:my_movies/widget/add_film_page.dart';
 import 'package:my_movies/model/film.dart';
-import 'package:my_movies/widget/rating_button.dart';
-import 'package:my_movies/widget/error_message.dart';
+import 'package:my_movies/service/film_manager.dart';
+import 'package:get_it/get_it.dart';
 import 'package:my_movies/widget/film_list_view.dart';
+import 'package:my_movies/widget/rating_button.dart';
 import 'package:my_movies/widget/film_filter.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({ super.key });
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  HomePageState createState() => HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
-  List<Film> films = [];
-  String errorMessage = '';
-  FilmRating? filterRating;
+class _HomePageState extends State<HomePage> {
+  final FilmManager _filmManager = GetIt.I<FilmManager>();
+  late Stream<List<Film>> _filmsStream;
+  FilmRating? _filterRating;
 
   @override
   void initState() {
     super.initState();
-    loadFilms();
+    _filmsStream = _filmManager.filmStream;
   }
 
-  int get goodFilmsCount => films.where((film) => film.rating == FilmRating.good).length;
-  int get badFilmsCount => films.where((film) => film.rating == FilmRating.bad).length;
-
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/films.json');
-  }
-
-  Future<void> loadFilms() async {
-    try {
-      final file = await _localFile;
-      if (await file.exists()) {
-        String filmsJson = await file.readAsString();
-        setState(() {
-          films = (jsonDecode(filmsJson) as List).map((item) => Film.fromJson(item)).toList();
-        });
-      }
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Error loading films: $e';
-      });
+  void _onSaveFilm(Film updatedFilm, int? filmIndex) {
+    if (filmIndex != null) {
+      _filmManager.updateFilm(filmIndex, updatedFilm);
+    } else {
+      _filmManager.addFilm(updatedFilm);
     }
   }
 
-  Future<void> saveFilms() async {
-    try {
-      final file = await _localFile;
-      String filmsJson = jsonEncode(films.map((film) => film.toJson()).toList());
-      await file.writeAsString(filmsJson);
-    } catch (e) {
-      setState(() {
-        errorMessage = 'Error saving films: $e';
-      });
-    }
-  }
+  void _updateRating(int index, FilmRating rating) {
+    final film = _filmManager.films[index];
+    final updatedFilm = film.copyWith(rating: rating);
 
-  void onSaveFilm(Film film, int? index) {
+    _filmManager.updateFilm(index, updatedFilm);
+
     setState(() {
-      if (index != null) {
-        films[index] = film;
-      } else {
-        films.add(film);
-      }
-      saveFilms();
     });
   }
 
-  void updateRating(int index, FilmRating rating) {
+  void _toggleFilter(FilmRating rating) {
     setState(() {
-      var filteredFilm = filteredFilms[index];
-      var originalIndex = films.indexOf(filteredFilm);
-      films[originalIndex].rating = rating;
-      saveFilms();
-    });
-  }
-
-  List<Film> get filteredFilms {
-    if (filterRating == null) {
-      return films;
-    }
-    return films.where((film) => film.rating == filterRating).toList();
-  }
-
-  void toggleFilter(FilmRating rating) {
-    setState(() {
-      filterRating = filterRating == rating ? null : rating;
+      _filterRating = _filterRating == rating ? null : rating;
     });
   }
 
@@ -105,12 +53,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Movies',
-          style: TextStyle(
-            fontSize: 20,
-          ),
-        ),
+        title: const Text('My Movies'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -118,36 +61,55 @@ class HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddFilmPage(onSaveFilm: onSaveFilm),
+                  builder: (context) => AddFilmPage(onSaveFilm: _onSaveFilm),
                 ),
               );
             },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          FilmFilter(
-            goodFilmsCount: goodFilmsCount,
-            badFilmsCount: badFilmsCount,
-            filterRating: filterRating,
-            toggleFilter: toggleFilter,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: FilmListView(
-                films: filteredFilms,
-                updateRating: updateRating,
-                onSaveFilm: onSaveFilm,
+      body: _buildFilmStream(),
+    );
+  }
+
+  Widget _buildFilmStream() {
+    return StreamBuilder<List<Film>>(
+      stream: _filmsStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Add your first film!'));
+        } else {
+          final films = snapshot.data!;
+          final goodFilmsCount = films.where((film) => film.rating == FilmRating.good).length;
+          final badFilmsCount = films.where((film) => film.rating == FilmRating.bad).length;
+
+          final filteredFilms = _filterRating == null
+              ? films
+              : films.where((film) => film.rating == _filterRating).toList();
+
+          return Column(
+            children: [
+              FilmFilter(
+                goodFilmsCount: goodFilmsCount,
+                badFilmsCount: badFilmsCount,
+                filterRating: _filterRating,
+                toggleFilter: _toggleFilter,
               ),
-            ),
-          ),
-          if (errorMessage.isNotEmpty)
-            ErrorMessageWidget(errorMessage: errorMessage),
-        ],
-      ),
+              Expanded(
+                child: FilmListView(
+                  films: filteredFilms,
+                  updateRating: _updateRating,
+                  onSaveFilm: _onSaveFilm,
+                ),
+              ),
+            ],
+          );
+        }
+      },
     );
   }
 }
-

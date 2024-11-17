@@ -14,4 +14,5 @@ class ErrorMessageWidget extends StatelessWidget {
         style: TextStyle(color: Colors.red.shade700),
       ),
     );
-  }  }
+  }
+}
