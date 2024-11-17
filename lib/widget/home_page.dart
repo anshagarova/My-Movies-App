@@ -3,9 +3,8 @@ import 'package:my_movies/widget/add_film_page.dart';
 import 'package:my_movies/model/film.dart';
 import 'package:my_movies/service/film_manager.dart';
 import 'package:get_it/get_it.dart';
-import 'package:my_movies/widget/film_list_view.dart';
 import 'package:my_movies/widget/rating_button.dart';
-import 'package:my_movies/widget/film_filter.dart';
+import 'package:my_movies/widget/film_stream_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -38,9 +37,7 @@ class _HomePageState extends State<HomePage> {
     final updatedFilm = film.copyWith(rating: rating);
 
     _filmManager.updateFilm(index, updatedFilm);
-
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _toggleFilter(FilmRating rating) {
@@ -68,48 +65,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _buildFilmStream(),
-    );
-  }
-
-  Widget _buildFilmStream() {
-    return StreamBuilder<List<Film>>(
-      stream: _filmsStream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Add your first film!'));
-        } else {
-          final films = snapshot.data!;
-          final goodFilmsCount = films.where((film) => film.rating == FilmRating.good).length;
-          final badFilmsCount = films.where((film) => film.rating == FilmRating.bad).length;
-
-          final filteredFilms = _filterRating == null
-              ? films
-              : films.where((film) => film.rating == _filterRating).toList();
-
-          return Column(
-            children: [
-              FilmFilter(
-                goodFilmsCount: goodFilmsCount,
-                badFilmsCount: badFilmsCount,
-                filterRating: _filterRating,
-                toggleFilter: _toggleFilter,
-              ),
-              Expanded(
-                child: FilmListView(
-                  films: filteredFilms,
-                  updateRating: _updateRating,
-                  onSaveFilm: _onSaveFilm,
-                ),
-              ),
-            ],
-          );
-        }
-      },
+      body: FilmStreamWidget(
+        filmsStream: _filmsStream,
+        filterRating: _filterRating,
+        toggleFilter: _toggleFilter,
+        onSaveFilm: _onSaveFilm,
+        updateRating: _updateRating,
+      ),
     );
   }
 }
