@@ -40,6 +40,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.my_movies"
@@ -49,6 +53,9 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
+
     }
 
     buildTypes {
@@ -57,6 +64,10 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
         }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
     }
 }
 
@@ -64,4 +75,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    androidTestUtil "androidx.test:orchestrator:1.5.1"
+}
