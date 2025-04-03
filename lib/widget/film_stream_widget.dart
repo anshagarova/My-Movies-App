@@ -30,7 +30,7 @@ class FilmStreamWidget extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Add your first film!'));
+          return const Center(child: Text('Add your first game!'));
         } else {
           final films = snapshot.data!;
           final filteredFilms = _filterFilms(films);
