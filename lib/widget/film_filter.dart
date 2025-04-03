@@ -25,7 +25,7 @@ class FilmFilter extends StatelessWidget {
           GestureDetector(
             onTap: () => toggleFilter(FilmRating.good),
             child: Text(
-              'Good: $goodFilmsCount',
+              'Good Games: $goodFilmsCount',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -36,7 +36,7 @@ class FilmFilter extends StatelessWidget {
           GestureDetector(
             onTap: () => toggleFilter(FilmRating.bad),
             child: Text(
-              'Bad: $badFilmsCount',
+              'Bad Games: $badFilmsCount',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

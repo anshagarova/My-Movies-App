@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Movies'),
+        title: const Text('My Games'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

@@ -21,7 +21,7 @@ class AddFilmPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(existingFilm == null ? 'Add Film' : 'Edit Film'),
+        title: Text(existingFilm == null ? 'Add Game' : 'Edit Game'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(5.0),
@@ -29,7 +29,7 @@ class AddFilmPage extends StatelessWidget {
           children: [
             FilmTitleTextField(
               controller: titleController,
-              label: 'Film Title',
+              label: 'Game Title',
               onSubmitted: (value) {
                 final updatedFilm = Film(
                   title: value,

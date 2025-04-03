@@ -20,7 +20,7 @@ class FilmUpdate extends StatelessWidget {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Text('No films available');
         }
-        return Text('Films updated: ${snapshot.data!.length}');
+        return Text('Games updated: ${snapshot.data!.length}');
       },
     );
   }
