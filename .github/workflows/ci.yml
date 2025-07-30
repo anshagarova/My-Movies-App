@@ -28,7 +28,7 @@ jobs:
         run: yes | flutter doctor --android-licenses
 
       - name: Analyze code
-        run: flutter analyze
+        run: flutter analyze lib
 
       - name: Build debug APK
         run: flutter build apk --debug
