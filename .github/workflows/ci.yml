@@ -28,7 +28,16 @@ jobs:
         run: yes | flutter doctor --android-licenses
 
       - name: Analyze code
-        run: flutter analyze lib
+        run: |
+          dart analyze lib --format json > result.json
+          ERRORS=$(jq '[.diagnostics[] | select(.severity=="ERROR")] | length' result.json)
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "❌ Found $ERRORS error(s)"
+            cat result.json | jq -r '.diagnostics[] | select(.severity=="ERROR") | "\(.location.file):\(.location.range.start.line):\(.location.range.start.column) - \(.problemMessage)"'
+            exit 1
+          else
+            echo "✅ No errors found"
+          fi
 
       - name: Build debug APK
         run: flutter build apk --debug
