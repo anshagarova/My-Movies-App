@@ -10,6 +10,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -18,8 +24,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Accept Android Licenses
+        run: yes | flutter doctor --android-licenses
+
       - name: Analyze code
         run: flutter analyze
 
-      - name: Build APK (just to check it compiles)
-        run: flutter build apk
+      - name: Build debug APK
+        run: flutter build apk --debug
