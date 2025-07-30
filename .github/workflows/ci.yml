@@ -27,16 +27,24 @@ jobs:
       - name: Accept Android Licenses
         run: yes | flutter doctor --android-licenses
 
-      - name: Analyze code
+      - name: Analyze code (fail only on real errors)
         run: |
-          dart analyze lib --format json > result.json
+          dart analyze lib --format json > result.json || true
+          
+          if [ ! -s result.json ]; then
+            echo "❌ Analyzer output is empty or invalid."
+            cat result.json
+            exit 1
+          fi
+          
           ERRORS=$(jq '[.diagnostics[] | select(.severity=="ERROR")] | length' result.json)
+          
           if [ "$ERRORS" -gt 0 ]; then
             echo "❌ Found $ERRORS error(s)"
-            cat result.json | jq -r '.diagnostics[] | select(.severity=="ERROR") | "\(.location.file):\(.location.range.start.line):\(.location.range.start.column) - \(.problemMessage)"'
+            jq -r '.diagnostics[] | select(.severity=="ERROR") | "\(.location.file):\(.location.range.start.line):\(.location.range.start.column) - \(.problemMessage)"' result.json
             exit 1
           else
-            echo "✅ No errors found"
+            echo "✅ No analyzer errors found"
           fi
 
       - name: Build debug APK
