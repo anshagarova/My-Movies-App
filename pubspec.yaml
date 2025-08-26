@@ -18,6 +18,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   patrol: ^3.7.1  # Make sure this is only under dev_dependencies
   flutter_lints: ^3.0.0
 
