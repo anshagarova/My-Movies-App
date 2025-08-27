@@ -1,4 +1,4 @@
-package com.patrol.my_movies;
+package com.newapp.my_movies;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;
