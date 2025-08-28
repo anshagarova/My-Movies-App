@@ -16,24 +16,82 @@ void main() {
     }
   }
 
-  patrolTest('add game and rate as good', ($) async {
+  // patrolTest('add game and rate as good', ($) async {
+  //   setup();
+  //   await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+  //
+  //   await $(find.byIcon(Icons.add)).tap();
+  //   await $.pumpAndSettle();
+  //   await $(TestKeys.INPUT_FIELD).enterText('Zelda');
+  //   await $('Save').tap();
+  //   await $.pumpAndSettle();
+  //   await $('Zelda').waitUntilVisible();
+  //
+  //   final zeldaCard = find.ancestor(
+  //     of: find.text('Zelda'),
+  //     matching: find.byType(Card),
+  //   );
+  //
+  //   await $(find.descendant(
+  //     of: zeldaCard,
+  //     matching: find.widgetWithText(ElevatedButton, 'Good'),
+  //   )).tap();
+  //
+  //   await $.pumpAndSettle();
+  //   await $('Good Games: 1').waitUntilVisible();
+  // });
+  //
+  // patrolTest('add game and rate as bad', ($) async {
+  //   setup();
+  //   await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+  //
+  //   await $(find.byIcon(Icons.add)).tap();
+  //   await $.pumpAndSettle();
+  //   await $(TestKeys.INPUT_FIELD).enterText('Mario');
+  //   await $('Save').tap();
+  //   await $.pumpAndSettle();
+  //   await $('Mario').waitUntilVisible();
+  //
+  //   final marioCard = find.ancestor(
+  //     of: find.text('Mario'),
+  //     matching: find.byType(Card),
+  //   );
+  //
+  //   await $(find.descendant(
+  //     of: marioCard,
+  //     matching: find.widgetWithText(ElevatedButton, 'Bad'),
+  //   )).tap();
+  //
+  //   await $.pumpAndSettle();
+  //   await $('Bad Games: 1').waitUntilVisible();
+  // });
+
+  patrolTest('update rating from bad to good', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
     await $(find.byIcon(Icons.add)).tap();
     await $.pumpAndSettle();
-    await $(TestKeys.INPUT_FIELD).enterText('Zelda');
+    await $(TestKeys.INPUT_FIELD).enterText('Astro Bot');
     await $('Save').tap();
     await $.pumpAndSettle();
-    await $('Zelda').waitUntilVisible();
+    await $('Astro Bot').waitUntilVisible();
 
-    final zeldaCard = find.ancestor(
-      of: find.text('Zelda'),
+    final astrobotCard = find.ancestor(
+      of: find.text('Astro Bot'),
       matching: find.byType(Card),
     );
 
     await $(find.descendant(
-      of: zeldaCard,
+      of: astrobotCard,
+      matching: find.widgetWithText(ElevatedButton, 'Bad'),
+    )).tap();
+
+    await $.pumpAndSettle();
+    await $('Bad Games: 1').waitUntilVisible();
+
+    await $(find.descendant(
+      of: astrobotCard,
       matching: find.widgetWithText(ElevatedButton, 'Good'),
     )).tap();
 
@@ -41,28 +99,64 @@ void main() {
     await $('Good Games: 1').waitUntilVisible();
   });
 
-  patrolTest('add game and rate as bad', ($) async {
+  patrolTest('add game and rename', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
     await $(find.byIcon(Icons.add)).tap();
     await $.pumpAndSettle();
-    await $(TestKeys.INPUT_FIELD).enterText('Mario');
+    await $(TestKeys.INPUT_FIELD).enterText('The Last of Us');
     await $('Save').tap();
     await $.pumpAndSettle();
-    await $('Mario').waitUntilVisible();
+    await $('The Last of Us').waitUntilVisible();
 
-    final marioCard = find.ancestor(
-      of: find.text('Mario'),
+    final tlouCard = find.ancestor(
+      of: find.text('The Last of Us'),
       matching: find.byType(Card),
     );
 
     await $(find.descendant(
-      of: marioCard,
-      matching: find.widgetWithText(ElevatedButton, 'Bad'),
+      of: tlouCard,
+      matching: find.byType(GestureDetector),
     )).tap();
 
     await $.pumpAndSettle();
-    await $('Bad Games: 1').waitUntilVisible();
+    await $(TestKeys.INPUT_FIELD).enterText('The Last of Us: Part Two');
+    await $('Update').tap();
+    await $.pumpAndSettle();
+    await $('The Last of Us: Part Two').waitUntilVisible();
+  });
+
+  patrolTest('remove rating', ($) async {
+    setup();
+    await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+    await $(TestKeys.INPUT_FIELD).enterText('God of War');
+    await $('Save').tap();
+    await $.pumpAndSettle();
+    await $('God of War').waitUntilVisible();
+
+    final godofwarCard = find.ancestor(
+      of: find.text('God of War'),
+      matching: find.byType(Card),
+    );
+
+    await $(find.descendant(
+      of: godofwarCard,
+      matching: find.widgetWithText(ElevatedButton, 'Good'),
+    )).tap();
+
+    await $.pumpAndSettle();
+    await $('Good Games: 2').waitUntilVisible();
+
+    await $(find.descendant(
+      of: godofwarCard,
+      matching: find.widgetWithText(ElevatedButton, 'Good'),
+    )).tap();
+
+    await $.pumpAndSettle();
+    await $('Good Games: 1').waitUntilVisible();
   });
 }
