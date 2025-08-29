@@ -9,4 +9,8 @@ class TestKeys {
 
   //Permission Notifier Dialog Keys
   static const INPUT_FIELD = Key('$_UNIQUE_PREFIX-input-field');
+  
+  // Counter keys
+  static const GOOD_COUNTER = Key('$_UNIQUE_PREFIX-good-counter');
+  static const BAD_COUNTER = Key('$_UNIQUE_PREFIX-bad-counter');
 }

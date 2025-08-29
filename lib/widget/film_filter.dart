@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_movies/widget/rating_button.dart';
+import 'package:my_movies/widget/util/test_keys.dart';
 
 class FilmFilter extends StatelessWidget {
   final int goodFilmsCount;
@@ -26,6 +27,7 @@ class FilmFilter extends StatelessWidget {
             onTap: () => toggleFilter(FilmRating.good),
             child: Text(
               'Good Games: $goodFilmsCount',
+              key: TestKeys.GOOD_COUNTER,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -37,6 +39,7 @@ class FilmFilter extends StatelessWidget {
             onTap: () => toggleFilter(FilmRating.bad),
             child: Text(
               'Bad Games: $badFilmsCount',
+              key: TestKeys.BAD_COUNTER,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

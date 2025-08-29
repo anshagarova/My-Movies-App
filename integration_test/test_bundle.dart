@@ -5,16 +5,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'add_game_and_rate_test.dart' as add_game_patroldev_test;
+import 'add_game_and_rate_test.dart' as add_game_and_rate_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
   PatrolBinding.ensureInitialized(NativeAutomatorConfig())
-    ..workaroundDebugDefaultTargetPlatformOverride = debugDefaultTargetPlatformOverride;
+    ..workaroundDebugDefaultTargetPlatformOverride =
+        debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
-  group('add_game_patroldev_test', add_game_patroldev_test.main);
+  group('add_game_and_rate_test', add_game_and_rate_test.main);
   // END: GENERATED TEST GROUPS
 }
