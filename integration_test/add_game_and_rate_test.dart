@@ -17,7 +17,7 @@ void main() {
     }
   }
 
-  patrolTest('add game and rate as good', ($) async {
+  patrolTest('Add game and rate it as good', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -50,7 +50,7 @@ void main() {
         badBefore: badBefore);
   });
 
-  patrolTest('add game and rate as bad', ($) async {
+  patrolTest('Add game and rate it as bad', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -83,7 +83,7 @@ void main() {
         badBefore: badBefore);
   });
 
-  patrolTest('update rating from bad to good', ($) async {
+  patrolTest('Update rating from bad to good', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -132,7 +132,7 @@ void main() {
         badBefore: badBefore);
   });
 
-  patrolTest('add game and rename', ($) async {
+  patrolTest('Add game and rename it', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -160,7 +160,7 @@ void main() {
     await $('The Last of Us: Part Two').waitUntilVisible();
   });
 
-  patrolTest('remove rating', ($) async {
+  patrolTest('Remove current rating', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -208,6 +208,43 @@ void main() {
         goodBefore: goodBefore,
         badBefore: badBefore);
   });
+
+    patrolTest('Cannot add an identical title', ($) async {
+    setup();
+    await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+    await $(TestKeys.INPUT_FIELD).enterText('The Withcer 3');
+    await $('Save').tap();
+    await $.pumpAndSettle();
+    await $('The Withcer 3').waitUntilVisible();
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+    await $(TestKeys.INPUT_FIELD).enterText('The Withcer 3');
+    await $('Save').tap();
+    await $.pumpAndSettle();
+   
+    await $('This title already exists').waitUntilVisible();
+
+  });
+
+  patrolTest('Cannot save empty game title', ($) async {
+    setup();
+    await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+
+    await $(TestKeys.INPUT_FIELD).waitUntilVisible();
+
+    await $('Save').tap();
+    await $.pumpAndSettle();
+
+    await $('Please enter a title').waitUntilVisible();
+  });
+  
 }
 
 int _readCounter(dynamic $, Key key) {
