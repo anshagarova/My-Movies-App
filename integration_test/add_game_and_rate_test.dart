@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'helpers.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:my_movies/service/film_manager.dart';
 import 'package:my_movies/widget/app_wrapper.dart';
 import 'package:my_movies/widget/util/test_keys.dart';
 import 'package:patrol/patrol.dart';
-import 'package:flutter/widgets.dart' as widgets;
 
 final getIt = GetIt.instance;
 
@@ -21,27 +21,15 @@ void main() {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
-    await $(find.byIcon(Icons.add)).tap();
-    await $.pumpAndSettle();
-    await $(TestKeys.INPUT_FIELD).enterText('Zelda');
-    await $('Save').tap();
-    await $.pumpAndSettle();
-    await $('Zelda').waitUntilVisible();
+    await addGame($, 'Zelda');
+    final zeldaCard = findCardByTitle('Zelda');
 
-    final zeldaCard = find.ancestor(
-      of: find.text('Zelda'),
-      matching: find.byType(Card),
-    );
+    final goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    final badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
-    final goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    final badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    await rate($, zeldaCard, 'Good');
 
-    await $(find.descendant(
-      of: zeldaCard,
-      matching: find.widgetWithText(ElevatedButton, 'Good'),
-    )).tap();
-
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: 1,
@@ -66,15 +54,15 @@ void main() {
       matching: find.byType(Card),
     );
 
-    final goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    final badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    final goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    final badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
     await $(find.descendant(
       of: marioCard,
       matching: find.widgetWithText(ElevatedButton, 'Bad'),
     )).tap();
 
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: 0,
@@ -99,15 +87,15 @@ void main() {
       matching: find.byType(Card),
     );
 
-    var goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    var badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    var goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    var badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
     await $(find.descendant(
       of: astrobotCard,
       matching: find.widgetWithText(ElevatedButton, 'Bad'),
     )).tap();
 
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: 0,
@@ -115,15 +103,15 @@ void main() {
         goodBefore: goodBefore,
         badBefore: badBefore);
 
-    goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
     await $(find.descendant(
       of: astrobotCard,
       matching: find.widgetWithText(ElevatedButton, 'Good'),
     )).tap();
 
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: 1,
@@ -136,28 +124,30 @@ void main() {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
-    await $(find.byIcon(Icons.add)).tap();
-    await $.pumpAndSettle();
-    await $(TestKeys.INPUT_FIELD).enterText('The Last of Us');
-    await $('Save').tap();
-    await $.pumpAndSettle();
-    await $('The Last of Us').waitUntilVisible();
+    await addGame($, 'The Last of Us');
+    final tlouCard = findCardByTitle('The Last of Us');
 
-    final tlouCard = find.ancestor(
-      of: find.text('The Last of Us'),
-      matching: find.byType(Card),
+    final goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    final badBefore = readCounter($, TestKeys.BAD_COUNTER);
+
+    await rate($, tlouCard, 'Good');
+
+    await expectCounterDelta($,
+      goodKey: TestKeys.GOOD_COUNTER,
+      badKey: TestKeys.BAD_COUNTER,
+      goodDelta: 1,
+      badDelta: 0,
+      goodBefore: goodBefore,
+      badBefore: badBefore,
     );
 
-    await $(find.descendant(
-      of: tlouCard,
-      matching: find.byType(GestureDetector),
-    )).tap();
+    await rename($, tlouCard, 'The Last of Us: Part Two');
 
-    await $.pumpAndSettle();
-    await $(TestKeys.INPUT_FIELD).enterText('The Last of Us: Part Two');
-    await $('Update').tap();
-    await $.pumpAndSettle();
-    await $('The Last of Us: Part Two').waitUntilVisible();
+    final goodAfter = readCounter($, TestKeys.GOOD_COUNTER);
+    final badAfter = readCounter($, TestKeys.BAD_COUNTER);
+
+    expect(goodAfter, goodBefore + 1);
+    expect(badAfter, badBefore);
   });
 
   patrolTest('Remove current rating', ($) async {
@@ -176,15 +166,15 @@ void main() {
       matching: find.byType(Card),
     );
 
-    var goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    var badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    var goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    var badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
     await $(find.descendant(
       of: godofwarCard,
       matching: find.widgetWithText(ElevatedButton, 'Good'),
     )).tap();
 
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: 1,
@@ -192,15 +182,15 @@ void main() {
         goodBefore: goodBefore,
         badBefore: badBefore);
 
-    goodBefore = _readCounter($, TestKeys.GOOD_COUNTER);
-    badBefore = _readCounter($, TestKeys.BAD_COUNTER);
+    goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
+    badBefore = readCounter($, TestKeys.BAD_COUNTER);
 
     await $(find.descendant(
       of: godofwarCard,
       matching: find.widgetWithText(ElevatedButton, 'Good'),
     )).tap();
 
-    await _expectCounterDelta($,
+    await expectCounterDelta($,
         goodKey: TestKeys.GOOD_COUNTER,
         badKey: TestKeys.BAD_COUNTER,
         goodDelta: -1,
@@ -209,7 +199,59 @@ void main() {
         badBefore: badBefore);
   });
 
-    patrolTest('Cannot add an identical title', ($) async {
+  patrolTest('Filter by Good and Bad counters', ($) async {
+    setup();
+    await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+    await $(TestKeys.INPUT_FIELD).enterText('GoodOne');
+    await $('Save').tap();
+    await $.pumpAndSettle();
+    await $('GoodOne').waitUntilVisible();
+
+    final goodOneCard = find.ancestor(
+      of: find.text('GoodOne'),
+      matching: find.byType(Card),
+    );
+
+    await $(find.descendant(
+      of: goodOneCard,
+      matching: find.widgetWithText(ElevatedButton, 'Good'),
+    )).tap();
+    await $.pumpAndSettle();
+
+    await $(find.byIcon(Icons.add)).tap();
+    await $.pumpAndSettle();
+    await $(TestKeys.INPUT_FIELD).enterText('BadOne');
+    await $('Save').tap();
+    await $.pumpAndSettle();
+    await $('BadOne').waitUntilVisible();
+
+    final badOneCard = find.ancestor(
+      of: find.text('BadOne'),
+      matching: find.byType(Card),
+    );
+
+    await $(find.descendant(
+      of: badOneCard,
+      matching: find.widgetWithText(ElevatedButton, 'Bad'),
+    )).tap();
+    await $.pumpAndSettle();
+
+    await $(find.byKey(TestKeys.GOOD_COUNTER)).tap();
+    await $.pumpAndSettle();
+    await $('GoodOne').waitUntilVisible();
+    expect(find.text('BadOne'), findsNothing);
+
+    await $(find.byKey(TestKeys.BAD_COUNTER)).tap();
+    await $.pumpAndSettle();
+    await $('BadOne').waitUntilVisible();
+    expect(find.text('GoodOne'), findsNothing);
+  });
+
+
+  patrolTest('Cannot add an identical title', ($) async {
     setup();
     await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
@@ -225,9 +267,8 @@ void main() {
     await $(TestKeys.INPUT_FIELD).enterText('The Withcer 3');
     await $('Save').tap();
     await $.pumpAndSettle();
-   
-    await $('This title already exists').waitUntilVisible();
 
+    await $('This title already exists').waitUntilVisible();
   });
 
   patrolTest('Cannot save empty game title', ($) async {
@@ -244,28 +285,5 @@ void main() {
 
     await $('Please enter a title').waitUntilVisible();
   });
-  
-}
 
-int _readCounter(dynamic $, Key key) {
-  final element = $(find.byKey(key)).evaluate().single.widget as widgets.Text;
-  final text = element.data ?? '';
-  final numberMatch = RegExp(r'\b(\d+)\b').firstMatch(text);
-  return int.parse(numberMatch!.group(1)!);
-}
-
-Future<void> _expectCounterDelta(
-  dynamic $, {
-  required Key goodKey,
-  required Key badKey,
-  required int goodDelta,
-  required int badDelta,
-  required int goodBefore,
-  required int badBefore,
-}) async {
-  await $.pumpAndSettle();
-  final goodAfter = _readCounter($, goodKey);
-  final badAfter = _readCounter($, badKey);
-  expect(goodAfter, goodBefore + goodDelta);
-  expect(badAfter, badBefore + badDelta);
 }
