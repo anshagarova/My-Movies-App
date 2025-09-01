@@ -26,7 +26,7 @@ void main() {
 
       final title = uniqueTitle('Test Game');
       await addGame($, title);
-      final gameCard = findCardByTitle(title);
+      final gameCard = await findCardByTitleWithScroll($, title);
 
       final goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
       final badBefore = readCounter($, TestKeys.BAD_COUNTER);
@@ -56,7 +56,7 @@ void main() {
     await $(TestKeys.INPUT_FIELD).enterText(title);
     await $('Save').tap();
     await $.pumpAndSettle();
-    await $(title).waitUntilVisible();
+    await scrollToAndWaitForTitle($, title);
 
     final astrobotCard = find.ancestor(
       of: find.text(title),
@@ -96,14 +96,14 @@ void main() {
         badBefore: badBefore);
   });
 
-  for (final rating in ['Good', 'Bad']) {
-    patrolTest('Remove current $rating rating', ($) async {
-      setup();
-      await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
+     for (final rating in ['Good', 'Bad']) {
+     patrolTest('Remove current $rating rating', ($) async {
+       setup();
+       await $.pumpWidgetAndSettle(AppWrapper(key: UniqueKey()));
 
-      final title = uniqueTitle('Test Game');
-      await addGame($, title);
-      final gameCard = findCardByTitle(title);
+       final title = uniqueTitle('Test Game');
+       await addGame($, title);
+       final gameCard = await findCardByTitleWithScroll($, title);
 
       var goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
       var badBefore = readCounter($, TestKeys.BAD_COUNTER);
@@ -145,14 +145,14 @@ void main() {
 
       final targetTitle = uniqueTitle('${rating}Game');
       await addGame($, targetTitle);
-      final targetCard = findCardByTitle(targetTitle);
+      final targetCard = await findCardByTitleWithScroll($, targetTitle);
       await rate($, targetCard, rating);
       await $.pumpAndSettle();
 
       final oppositeRating = rating == 'Good' ? 'Bad' : 'Good';
       final oppositeTitle = uniqueTitle('${oppositeRating}Game');
       await addGame($, oppositeTitle);
-      final oppositeCard = findCardByTitle(oppositeTitle);
+      final oppositeCard = await findCardByTitleWithScroll($, oppositeTitle);
       await rate($, oppositeCard, oppositeRating);
       await $.pumpAndSettle();
 
@@ -160,7 +160,7 @@ void main() {
       await $(find.byKey(counterKey)).tap();
       await $.pumpAndSettle();
       
-      await $(targetTitle).waitUntilVisible();
+      await scrollToAndWaitForTitle($, targetTitle);
       expect(find.text(oppositeTitle), findsNothing);
     });
   }
@@ -173,7 +173,7 @@ void main() {
 
     final title = uniqueTitle('The Last of Us');
     await addGame($, title);
-    final tlouCard = findCardByTitle(title);
+    final tlouCard = await findCardByTitleWithScroll($, title);
 
     final goodBefore = readCounter($, TestKeys.GOOD_COUNTER);
     final badBefore = readCounter($, TestKeys.BAD_COUNTER);
@@ -209,7 +209,7 @@ void main() {
     await $(TestKeys.INPUT_FIELD).enterText(title);
     await $('Save').tap();
     await $.pumpAndSettle();
-    await $(title).waitUntilVisible();
+    await scrollToAndWaitForTitle($, title);
 
     await $(find.byIcon(Icons.add)).tap();
     await $.pumpAndSettle();

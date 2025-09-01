@@ -33,7 +33,7 @@ Future<void> addGame(dynamic $, String title) async {
   await $(TestKeys.INPUT_FIELD).enterText(title);
   await $('Save').tap();
   await $.pumpAndSettle();
-  await $(title).waitUntilVisible();
+  await scrollToAndWaitForTitle($, title);
 }
 
 Finder findCardByTitle(String title) {
@@ -57,7 +57,7 @@ Future<void> rename(dynamic $, Finder card, String newTitle) async {
   await $(TestKeys.INPUT_FIELD).enterText(newTitle);
   await $('Update').tap();
   await $.pumpAndSettle();
-  await $(newTitle).waitUntilVisible();
+  await scrollToAndWaitForTitle($, newTitle);
 }
 
 Future<void> tapCounter(dynamic $, Key counterKey) async {
@@ -82,4 +82,35 @@ String uniqueTitle(String baseTitle) {
   return '$baseTitle-$suffix';
 }
 
+Future<void> scrollToAndWaitForTitle(dynamic $, String title) async {
+  try {
+    await $(title).waitUntilVisible(timeout: Duration(seconds: 2));
+  } catch (e) {
+    await $.scrollUntilVisible(
+      finder: find.text(title),
+      view: find.byType(ListView).first,
+      scrollDirection: AxisDirection.down,
+      maxScrolls: 10,
+    );
+    await $(title).waitUntilVisible();
+  }
+}
 
+Future<Finder> findCardByTitleWithScroll(dynamic $, String title) async {
+  await scrollToAndWaitForTitle($, title);
+  return findCardByTitle(title);
+}
+
+Future<void> ensureVisible(dynamic $, Finder finder) async {
+  try {
+    await $(finder).waitUntilVisible(timeout: Duration(seconds: 2));
+  } catch (e) {
+    await $.scrollUntilVisible(
+      finder: finder,
+      view: find.byType(ListView).first,
+      scrollDirection: AxisDirection.down,
+      maxScrolls: 10,
+    );
+    await $(finder).waitUntilVisible();
+  }
+}
