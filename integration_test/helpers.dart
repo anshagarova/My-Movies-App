@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
@@ -73,6 +74,12 @@ Future<void> expectNoCounterChange(dynamic $, {required int goodBefore, required
     goodBefore: goodBefore,
     badBefore: badBefore,
   );
+}
+
+String uniqueTitle(String baseTitle) {
+  final random = Random();
+  final suffix = random.nextInt(999999).toString().padLeft(6, '0');
+  return '$baseTitle-$suffix';
 }
 
 
