@@ -39,9 +39,8 @@ jobs:
           script: |
             dart pub global activate patrol_cli
             export PATH="$PATH:$HOME/.pub-cache/bin"
-            patrol build --target integration_test
             flutter build apk --debug
-            patrol test --device emulator-5554
+            patrol test --device "emulator-5554" --target integration_test
 
       - name: Run custom analyzer check
         run: dart run tool/analyze_check.dart
